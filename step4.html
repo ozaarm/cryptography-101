@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- (c) Pascal Mitride, ozaarm@gmail.com //-->
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Step 4 - XOR</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: sans-serif;
+      margin-top: 100px; 
+    }
+    .example { background-color:seashell; padding: 0.1em 1em; margin-bottom: 1em; }
+    .howitworks { background-color:lemonchiffon; padding: 0.1em 1em; margin-bottom: 1em; } 
+    .conclusion { background-color: seashell; padding: 0.1em 1em; margin-bottom: 1em; }        
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-light bg-white fixed-top border-bottom border-2">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">Cryptography 101 with JavaScript</span>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="container mt-5 mb-5">
+    <h1>Using XOR to move bits</h1>
+    
+    <p>The 0s and 1s we saw in step 3 are called <strong>bits</strong>. By changing bit values according to some logic and a key, we can transform characters into something a little harder to guess. 
+    </p>
+    <p>In this example we are going to use XOR. It is a <strong>bit-wise</strong> function (it works with bits) that compares two binary numbers and does something with them : it returns <strong>1</strong> when the bits are different, <strong>0</strong> when they're the same.</p>
+    <p>For example, the letter <strong>H</strong> is 01001000 and the number 42 (picked randomly) is 00101010. We compare the two binary numbers bit by bit using XOR rules and the end result is 01100010. This new binary number is 98 in decimal which is equal to the character "b" in the ASCII table. So H becomes b using XOR with 42 as key. 
+    <p><strong>IMPORTANT : </strong>There are other bit-wise functions, but only XOR allows us to get the original value using the same key !</p>
+
+    <hr>
+
+    <div class="example pb-4">
+      <h2 class="mt-3">Example</h2>
+      <p>Enter a message and we'll show you the binary version, the XOR result using key <code>42</code>, and the decrypted version.</p>
+
+      <div class="mb-3">
+        <label for="xorInput" class="form-label"><strong>INPUT</strong></label>
+        <input type="text" id="xorInput" class="form-control" placeholder="Enter your message" />
+        <button class="btn btn-primary mt-2" onclick="processXOR()">Encrypt + Decrypt</button>
+      </div>
+
+      <div class="mt-3">
+        <strong>OUTPUT (binary)</strong><br>
+        <input type="text" id="xorBinaryOutput" class="form-control mb-3" placeholder="Binary output" />
+        
+        <strong>OUTPUT (XOR-ed binary)</strong><br>
+        <input type="text" id="xorEncryptedBinary" class="form-control mb-3" placeholder="Binary XOR output" />
+        
+        <strong>OUTPUT (decrypted text)</strong><br>
+        <input type="text" id="xorDecryptedOutput" class="form-control" placeholder="Original text after double XOR" />
+      </div>
+    </div>
+
+    <div class="howitworks pb-5">
+      <h2 class="mt-3">How It Works</h2>
+      <p>
+        For each character:
+        <ul>
+          <li>Convert it to binary with <code>toString(2)</code></li>
+          <li>XOR the numeric code with 42: <code>code ^ 42</code></li>
+          <li>Store both the binary and encrypted binary</li>
+          <li>Decrypt by XORing again with 42</li>
+        </ul>
+        The final output matches the original thanks to XOR's magical property: applying it twice with the same key undoes the operation.
+      </p>
+    </div>
+
+    <div class="conclusion py-3">
+      <h2 class="mt-3">Conclusion</h2>
+      <p>With XOR, we can obscure messages using a very short numeric key. While this isn't secure for real-world use (each character always produce the same binary value), it teaches a powerful idea that leads to real encryption methods.</p>
+    </div>
+
+    <div class="d-flex justify-content-center mt-5">
+      <nav aria-label="...">
+        <ul class="pagination">
+          <li class="page-item">
+            <a class="page-link" href="step3.html">Previous</a>
+          </li>
+          <li class="page-item"><a class="page-link" href="step3.html">3</a></li>
+          <li class="page-item active" aria-current="page"><a class="page-link" href="step4.html">4</a></li>
+          <li class="page-item"><a class="page-link" href="step5.html">5</a></li>
+          <li class="page-item">
+            <a class="page-link" href="step5.html">Next</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    function processXOR() {
+      const input = document.getElementById('xorInput').value;
+      let binaryOutput = "";
+      let xorBinaryOutput = "";
+      let decryptedText = "";
+
+      for (let i = 0; i < input.length; i++) {
+        const code = input.charCodeAt(i);
+        const binary = code.toString(2).padStart(8, '0');
+        const encryptedCode = code ^ 42;
+        const encryptedBinary = encryptedCode.toString(2).padStart(8, '0');
+        const decryptedChar = String.fromCharCode(encryptedCode ^ 42);
+
+        binaryOutput += binary + " ";
+        xorBinaryOutput += encryptedBinary + " ";
+        decryptedText += decryptedChar;
+      }
+
+      document.getElementById('xorBinaryOutput').value = binaryOutput.trim();
+      document.getElementById('xorEncryptedBinary').value = xorBinaryOutput.trim();
+      document.getElementById('xorDecryptedOutput').value = decryptedText;
+    }
+  </script>
+
+</body>
+</html>

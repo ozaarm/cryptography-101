@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- (c) Pascal Mitride, ozaarm@gmail.com //-->
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Step 3 - Introducing Binary</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: sans-serif;
+      margin-top: 100px; 
+    }
+    .example { background-color:seashell; padding: 0.1em 1em; margin-bottom: 1em; }
+    .howitworks { background-color:lemonchiffon; padding: 0.1em 1em; margin-bottom: 1em; } 
+    .conclusion { background-color: seashell; padding: 0.1em 1em; margin-bottom: 1em; }        
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-light bg-white fixed-top border-bottom border-2">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">Cryptography 101 with JavaScript</span>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="container mt-5 mb-5">
+    <h1>Introducing Binary</h1>
+    <p>Instead of using plain numbers to represent characters, cryptographers often use a more obfuscated form: <strong>binary</strong>. Each character is represented as a combination of zeros and ones, which makes it harder to read or guess at a glance.</p>
+    <p>In this step, we will convert a sentence into its binary representation, using <code>charCodeAt()</code> to get the numeric code, and then convert it into base 2 (binary) using <code>toString(2)</code>.</p>
+
+    <hr>
+
+    <div class="example pb-5">
+      <h2 class="mt-3">Example</h2>
+      <p>Enter a short message using ASCII or extended ASCII characters only (more on this later). Each character will be converted to its 8-bit binary code. For example, "Hi" becomes:</p>
+      <code>01001000 01101001</code>
+
+      <div class="mb-3 mt-3">
+        <label for="textInput" class="form-label"><strong>INPUT</strong></label>
+        <input type="text" id="textInput" class="form-control" placeholder="Enter your message" />
+        <button class="btn btn-primary mt-2" onclick="showBinary()">View Result</button>
+      </div>
+
+      <div class="mt-4">
+        <strong>OUTPUT (binary)</strong><br>
+        <input type="text" id="textOutputBox" class="form-control" placeholder="Binary result will appear here" />
+      </div>
+
+      <br>
+      <strong>OUTPUT (decrypted)</strong><br>
+      <input type="text" id="decryptedOutput" class="form-control" placeholder="Decrypted result will appear here" />
+      <button class="btn btn-primary mt-2" onclick="decryptBinary()">Decrypt</button>
+
+    </div>
+
+    <div class="howitworks pb-5">
+      <h2 class="mt-3">How It Works</h2>
+      <p>
+        For each character, we:
+        <ul>
+          <li>Use <code>charCodeAt(i)</code> to get the numeric code</li>
+          <li>Convert it to binary with <code>toString(2)</code>. Note : <code>toString(16)</code> would convert a character to an hexadecimal value</li>
+          <li>Ensure it's always 8 bits long using <code>padStart(8, '0')</code></li>
+        </ul>
+        The reason we use 8 bits is consistency: without it, characters like "A" become <code>1000001</code>, which looks short and messy. Adding leading zeros makes the output uniform and easier to work with.
+      </p>
+
+      <code>
+        let output = ""; <br>
+        for (let i = 0; i &lt; input.length; i++) { <br>
+        &nbsp;&nbsp;let code = input.charCodeAt(i); <br>
+        &nbsp;&nbsp;let binary = code.toString(2).padStart(8, '0'); <br>
+        &nbsp;&nbsp;output += binary + " "; <br>
+        }
+      </code>
+    </div>
+
+    <div class="conclusion py-3">
+      <h2 class="mt-3">Conclusion</h2>
+      <p>We've just turned a sentence into a binary sequence. You can see how even a simple phrase looks more obscure when encoded this way. This lays the groundwork for stronger transformations we'll explore next.</p>
+    </div>
+
+    <div class="d-flex justify-content-center mt-5">
+      <nav aria-label="...">
+        <ul class="pagination">
+          <li class="page-item">
+            <a class="page-link" href="step2.html">Previous</a>
+          </li>
+          <li class="page-item"><a class="page-link" href="step2.html">2</a></li>
+          <li class="page-item active" aria-current="page"><a class="page-link" href="step3.html">3</a></li>
+          <li class="page-item"><a class="page-link" href="step4.html">4</a></li>
+          <li class="page-item">
+            <a class="page-link" href="step4.html">Next</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    function showBinary() {
+      const input = document.getElementById('textInput').value;
+      let output = "";
+
+      for (let i = 0; i < input.length; i++) {
+        const code = input.charCodeAt(i);
+        const binary = code.toString(2).padStart(8, '0');
+        output += binary + " ";
+      }
+
+      document.getElementById('textOutputBox').value = output.trim();
+      console.log("Original:", input);
+      console.log("Binary:", output.trim());
+    }
+
+    function decryptBinary() {
+  const input = document.getElementById('textOutputBox').value.trim();
+  const binaryChunks = input.split(" ");
+  let output = "";
+
+  for (let binary of binaryChunks) {
+    if (binary.length === 8) {
+      const code = parseInt(binary, 2);
+      output += String.fromCharCode(code);
+    }
+  }
+
+  document.getElementById('decryptedOutput').value = output;
+  console.log("Decrypted:", output);
+}
+
+  </script>
+
+</body>
+</html>
