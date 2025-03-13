@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- (c) Pascal Mitride, ozaarm@gmail.com //-->
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Step 2 - Shifting a Full Message</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: sans-serif;
+      margin-top: 100px; 
+    }
+    .example { background-color:seashell; padding: 0.1em 1em; margin-bottom: 1em;  }
+    .howitworks { background-color:lemonchiffon; padding: 0.1em 1em; margin-bottom: 1em;  } 
+    .conclusion { background-color: seashell; padding: 0.1em 1em; margin-bottom: 1em;  }        
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-light bg-white fixed-top border-bottom border-2">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">Cryptography 101 with JavaScript</span>
+      <span class="text-dark">Step 2</span>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="container mt-5 mb-5">
+    <h1>Shifting a Full Message</h1>
+    <p>Shifting a single letter is fine, but what if we want to encrypt a full word or a message like "hello world"?</p>
+    <p>We'll now loop through the input and shift each character by +1 using charCodeAt and fromCharCode — and build a new encrypted string.</p>
+
+    <hr>
+
+    <div class="example pb-5">
+      <h2 class="mt-3">Example</h2>
+      <p>Enter a short message. Each character (even spaces) will be shifted by +1. For example, "abc" becomes "bcd".</p>
+
+      <div class="mb-3">
+        <label for="textInput" class="form-label"><strong>INPUT</strong></label>
+        <input type="text" id="textInput" class="form-control" placeholder="Enter your message" />
+        <button class="btn btn-primary mt-2" onclick="shiftMessage()">View Result</button>
+      </div>
+
+      <div class="mt-4">
+        <strong>OUTPUT</strong><br>
+        <input type="text" id="textOutputBox" class="form-control" placeholder="Shifted result will appear here" />
+      </div>
+    </div>
+
+    <div class="howitworks pb-5">
+      <h2 class="mt-3">How It Works</h2>
+      <p>
+        We use a loop to go through each character of the input string using charAt(i), get its charCode with charCodeAt(i),
+        increment it by 1, and convert it back with fromCharCode(). Spaces and punctuation are also shifted!
+      </p>
+
+      <code>
+        let output = ""; <br>
+        for (let i = 0; i &lt; input.length; i++) { <br>
+        &nbsp;&nbsp;let code = input.charCodeAt(i); <br>
+        &nbsp;&nbsp;output += String.fromCharCode(code + 1); <br>
+        }
+      </code>
+    </div>
+
+    <div class="conclusion py-3">
+      <h2 class="mt-3">Conclusion</h2>
+      <p>We've now changed full words (and sentences) instead of one character by looping through each character. <br>This works well but as apprentice cryptographers we notice that spaces are always translated as exclamation points (!). 
+    From there on, we conclude that how encryption mechanism could be easily guessed, so we need to upscale a bit in Step 3.</p>
+    </div>
+
+    <div class="d-flex justify-content-center mt-5">
+      <nav aria-label="...">
+        <ul class="pagination">
+          <li class="page-item">
+            <a class="page-link" href="step1.html">Previous</a>
+          </li>
+          <li class="page-item"><a class="page-link" href="step1.html">1</a></li>
+          <li class="page-item active" aria-current="page"><a class="page-link" href="step2.html">2</a></li>
+          <li class="page-item"><a class="page-link" href="step3.html">3</a></li>
+          <li class="page-item">
+            <a class="page-link" href="step3.html">Next</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    function shiftMessage() {
+      const input = document.getElementById('textInput').value;
+      let output = "";
+
+      for (let i = 0; i < input.length; i++) {
+        let code = input.charCodeAt(i);
+        output += String.fromCharCode(code + 1);
+      }
+
+      document.getElementById('textOutputBox').value = output;
+      console.log("Original:", input, "→ Shifted:", output);
+    }
+  </script>
+
+</body>
+</html>
