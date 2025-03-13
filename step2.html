@@ -47,8 +47,14 @@
       </div>
 
       <div class="mt-4">
-        <strong>OUTPUT</strong><br>
+        <strong>OUTPUT (encrypted)</strong><br>
         <input type="text" id="textOutputBox" class="form-control" placeholder="Shifted result will appear here" />
+
+        <br><br>
+        <label for="decryptedOutput"><strong>DECRYPT MESSAGE</strong></label><br>
+        <input type="text" id="decryptedOutput" class="form-control mb-2" placeholder="Decrypted message will appear here" />
+        <button class="btn btn-primary mt-2" onclick="decryptMessage()">Decrypt</button>
+        
       </div>
     </div>
 
@@ -56,7 +62,7 @@
       <h2 class="mt-3">How It Works</h2>
       <p>
         We use a loop to go through each character of the input string using charAt(i), get its charCode with charCodeAt(i),
-        increment it by 1, and convert it back with fromCharCode(). Spaces and punctuation are also shifted!
+        increment it by 1, and convert it back with fromCharCode(). Spaces and punctuation are also shifted! 
       </p>
 
       <code>
@@ -65,13 +71,16 @@
         &nbsp;&nbsp;let code = input.charCodeAt(i); <br>
         &nbsp;&nbsp;output += String.fromCharCode(code + 1); <br>
         }
+        <br><br>
+        and then loop back each character with decrypted += String.fromCharCode(code - 1); 
+
+
       </code>
     </div>
 
     <div class="conclusion py-3">
       <h2 class="mt-3">Conclusion</h2>
-      <p>We've now changed full words (and sentences) instead of one character by looping through each character. <br>This works well but as apprentice cryptographers we notice that spaces are always translated as exclamation points (!). 
-    From there on, we conclude that how encryption mechanism could be easily guessed, so we need to upscale a bit in Step 3.</p>
+      <p>We've now changed full words (and sentences) instead of one character by looping through each character back and forth. <br>This works well but we notice that spaces are always translated as exclamation points (!). <br>Way too obvious, our encryption mechanism could be easily guessed, so we need to improve it with something more elaborate, let's go to Step 3.</p>
     </div>
 
     <div class="d-flex justify-content-center mt-5">
@@ -104,6 +113,24 @@
       document.getElementById('textOutputBox').value = output;
       console.log("Original:", input, "→ Shifted:", output);
     }
+
+    function decryptMessage() {
+    const input = document.getElementById('textOutputBox').value;
+    let decrypted = "";
+
+    for (let i = 0; i < input.length; i++) {
+      let code = input.charCodeAt(i);
+      decrypted += String.fromCharCode(code - 1);
+    }
+
+    const result = "(decrypted) " + decrypted;
+    document.getElementById('decryptedOutput').value = result;
+    console.log("Decrypted:", result);
+    }
+
+
+
+
   </script>
 
 </body>
