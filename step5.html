@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Step 5 - Final Considerations on Cryptography</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+    body {
+      font-family: sans-serif;
+      margin-top: 100px; 
+    }
+    h1,h2,h3 { font-family: "Open Sans", sans-serif; margin: 1em 0em;}
+
+    .intro, .howitworks, .conclusion, .example { margin: 3em 0em 1em 0em; }      
+    .example { background-color:seashell; padding: 0.2em 1em;  
+      box-shadow: 5px 5px 5px #C2C2C2; }
+    .highlighter { background-color: yellow;}
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-light bg-white fixed-top border-bottom border-2">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">Cryptography for Beginners</span>
+    </div>
+  </nav>
+
+  <div class="container mt-5 mb-5">
+
+    <h1>5. Key Lifetime, Ciphers and Hash</h1>
+
+    <div class="conclusion py-0">
+
+    <h2>Key Lifetime</h2>
+      <p>Assymetric encryption is used everywhere from secure messaging to cryptocurrencies, but with one difference: while messengers typically use <code>ephemeral keys</code>, cryptocurrencies tend to require static keys.</p>
+      <p>
+       All key pairs are usually stored on the user's device but their lifetime differs. 
+       Ephemeral keys are short-lived, one-time-use key pairs generated <code>just for a single message or session</code> . They improve security by making it harder for attackers to gain long-term access, even if one key is compromised. Ephemeral keys are used by messaging apps such as Whatsapp, Signal, etc.
+      </p>
+
+      <p>
+        &#x26A0;&#xFE0F; In most cryptocurrencies (Bitcoin, Ethereum, XRP) however, the private/public key pair is long-lived, it is tied to your wallet address and ultimate <code>security depends on keeping the private key safe</code>.
+      </p>      
+         
+      <h2>Encryption and Ciphers</h2>
+      <p>Once the shared key is created, we use a <code>cipher</code> — in this case, <strong>AES-GCM</strong> — to encrypt the actual message. <strong>AES</strong> (Advanced Encryption Standard) is one of the most trusted encryption algorithms in the world, with versions based on key length: AES-256 used in the examples has the strongest strength. </p>
+    
+    <p>The <strong>encryption key</strong> (the AES key) is like a secret password, while the <strong>encryption cipher</strong> (AES) is the lock — a set of rules used to encrypt and decrypt the data.
+    </p>
+    <p>While AES is the most popular encryption ciphers, <b>ChaCha20</b> is widely used for streams. RSA or Blowfish/Twofish are still in use but are slowly falling out of fashion, however some applications like the Tor browser use a mix of AES and RSA.</p>
+
+    <h2>Encryption versus Hashing</h2>
+      <p>
+       An encryption cipher like AES-256 should not be confused with a hash algorithm like SHA-256. The purpose of a hash is to obfuscate a piece of content - a password for instance -  <b>forever without any further possibility to read it clear.</b> When one wants to verify a password, one compares an obfuscated version of the password stored in the database with the obfuscated version of what the user just typed. 
+      </p>
+      <p>Whatever the original content is destroyed in the hashing process and becomes a 256-bit (a 64-character hexadecimal) hash.</p>
+
+      <div class="example pb-4">
+        <h2 class="mt-3">Example 1</h2>
+        <p>Type in a fake password below, then click on "Hash This".</p>
+        <div class="mb-3">
+          <label for="hashInput" class="form-label"><strong>Password</strong></label>
+          <input type="text" id="hashInput" class="form-control" placeholder="Enter text to hash..." />
+        </div>
+      
+        <button class="btn btn-primary mb-3" onclick="hashMessage()">Hash This</button>
+      
+        <div class="mb-3">
+          <label for="hashOutput" class="form-label"><strong>Hashed Output (SHA-256)</strong></label>
+          <input type="text" id="hashOutput" class="form-control" readonly />
+        </div>
+      </div>
+
+<br>
+<p>This hashed output looks impressive but it is not secure enough: <span class="highlighter"> the same text always produces the same output </span>! We need something more called a salt. A salt is a (preferably) random key that further obfuscates the hashed output. </p>
+
+<p>The random element is appended ("padded") to the original data before the hash, therefore <span class="highlighter"> two users with the same password or identifier cannot have the same SHA-256 output</span>. </p>
+
+<p>The purpose of hashing and salting is <span class="highlighter"> prevent the creation of a "dictionary" of SHA-256 values</span> where "password123" always equals to <em>ef92b778bafe771e8924...f</em></p>
+
+
+
+<div class="example pb-4">
+    <h2 class="mt-3">Example 2 – Hash with Salt</h2>
+    <p>
+        Click on Generate Salt below, then enter a password and click Hash This. Then, generate  a new salt and again Hash This. 
+    </p>
+  
+    <button class="btn btn-secondary mb-3" onclick="generateSalt()">Generate Salt</button>
+  
+    <div class="mb-3">
+      <label for="saltBox" class="form-label"><strong>Generated Salt</strong></label>
+      <input type="text" id="saltBox" class="form-control" readonly placeholder="Salt will appear here" />
+    </div>
+  
+    <div class="mb-3">
+      <label for="textWithSalt" class="form-label"><strong>Password</strong></label>
+      <input type="text" id="textWithSalt" class="form-control" placeholder="Enter your message or password" />
+    </div>
+  
+    <div class="mb-3">
+      <label for="hashedWithSalt" class="form-label"><strong>Hashed Output (SHA-256 + Salt)</strong></label>
+      <input type="text" id="hashedWithSalt" class="form-control" readonly placeholder="Hash result with salt" />
+    </div>
+  
+    <button class="btn btn-primary" onclick="hashWithSalt()">Hash This</button>
+  </div>
+  
+     <br>
+    <p>
+      Voilà, this concludes our mini-course. Between keys, ciphers, encoding, hashing and salt, binary, Base64, AES-256 or SHA-256, I hope you know a little about the subtle art of cryptology. Just like I have.
+    </p>
+ </div>
+
+ <div class="d-flex justify-content-center mt-5">
+  <nav aria-label="...">
+    <ul class="pagination">
+      <li class="page-item">
+        <a class="page-link" href="step4.html">Previous</a>
+      </li>
+
+      <li class="page-item"><a class="page-link" href="step1.html">1</a></li>
+
+      <li class="page-item"><a class="page-link" href="step2.html">2</a></li>
+      
+      <li class="page-item"><a class="page-link" href="step3.html">3</a></li>
+
+      <li class="page-item" aria-current="page"><a class="page-link" href="step4.html">4</a></li>
+
+      <li class="page-item active" aria-current="page"><a class="page-link" href="step5.html">5</a></li>
+      
+      <li class="page-item disabled">
+        <a class="page-link" href="step4.html">Next</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+
+
+  </div>
+
+  <script>
+
+let publicKeyBstring = "";
+
+async function generateUserBKeyPair() {
+  const keyPairB = await window.crypto.subtle.generateKey(
+    {
+      name: "ECDH",
+      namedCurve: "P-256",
+    },
+    true,
+    ["deriveKey", "deriveBits"]
+  );
+
+  const publicKeyRaw = await window.crypto.subtle.exportKey("spki", keyPairB.publicKey);
+  publicKeyBstring = btoa(String.fromCharCode(...new Uint8Array(publicKeyRaw)));
+
+  // Paste public key into the input box
+  document.getElementById("publicKeyB").value = publicKeyBstring;
+}
+
+
+
+
+    async function generateKeyPair() {
+      const keyPair = await window.crypto.subtle.generateKey(
+        {
+          name: "ECDH",
+          namedCurve: "P-256"
+        },
+        true,
+        ["deriveKey", "deriveBits"]
+      );
+  
+      const privateKeyRaw = await window.crypto.subtle.exportKey("pkcs8", keyPair.privateKey);
+      const publicKeyRaw = await window.crypto.subtle.exportKey("spki", keyPair.publicKey);
+  
+      const privateKeyBase64 = btoa(String.fromCharCode(...new Uint8Array(privateKeyRaw)));
+      const publicKeyBase64 = btoa(String.fromCharCode(...new Uint8Array(publicKeyRaw)));
+  
+      document.getElementById("privateKeyBox").value = privateKeyBase64;
+      document.getElementById("publicKeyBox").value = publicKeyBase64;
+      document.getElementById("privateKeyA").value = privateKeyBase64;
+    }
+  </script>
+<script>
+  async function encryptMessage() {
+    const message = document.getElementById("userMessage").value;
+    const privateKeyBase64 = document.getElementById("privateKeyA").value.trim();
+    const publicKeyBase64 = document.getElementById("publicKeyB").value.trim();
+    const aesKeyBox = document.getElementById("AESkey");
+    const outputBox = document.getElementById("encryptedOutput");
+
+    if (!message || !privateKeyBase64 || !publicKeyBase64) {
+      outputBox.value = "(Missing message or keys)";
+      return;
+    }
+
+    try {
+      // Convert base64 to ArrayBuffer
+      const privateKeyBuffer = Uint8Array.from(atob(privateKeyBase64), c => c.charCodeAt(0));
+      const publicKeyBuffer = Uint8Array.from(atob(publicKeyBase64), c => c.charCodeAt(0));
+
+      const privateKey = await crypto.subtle.importKey(
+        "pkcs8",
+        privateKeyBuffer,
+        { name: "ECDH", namedCurve: "P-256" },
+        false,
+        ["deriveKey"]
+      );
+
+      const publicKey = await crypto.subtle.importKey(
+        "spki",
+        publicKeyBuffer,
+        { name: "ECDH", namedCurve: "P-256" },
+        false,
+        []
+      );
+
+      const aesKey = await crypto.subtle.deriveKey(
+        {
+          name: "ECDH",
+          public: publicKey
+        },
+        privateKey,
+        {
+          name: "AES-GCM",
+          length: 256
+        },
+        true,
+        ["encrypt", "decrypt"]
+      );
+
+      // Export AES key (for display/demo purposes only)
+      const aesRaw = await crypto.subtle.exportKey("raw", aesKey);
+      const aesBase64 = btoa(String.fromCharCode(...new Uint8Array(aesRaw)));
+      aesKeyBox.value = aesBase64;
+      document.getElementById("AESkey").value = aesBase64;
+
+      // Encrypt message
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const encodedMessage = new TextEncoder().encode(message);
+      const encryptedBuffer = await crypto.subtle.encrypt(
+        { name: "AES-GCM", iv },
+        aesKey,
+        encodedMessage
+      );
+
+      const encryptedBase64 = btoa(String.fromCharCode(...new Uint8Array(encryptedBuffer)));
+      const ivBase64 = btoa(String.fromCharCode(...iv));
+
+      const output = {
+        iv: ivBase64,
+        encrypted: encryptedBase64
+      };
+
+      outputBox.value = JSON.stringify(output, null, 2);
+    } catch (err) {
+      console.error(err);
+      outputBox.value = "(Encryption failed)";
+    }
+  }
+
+  generateUserBKeyPair(); 
+
+  function sanitizeInput(input) {
+  return input.replace(/[&<>"'`=\/]/g, function (char) {
+    const map = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+      "/": "&#x2F;",
+      "`": "&#x60;",
+      "=": "&#x3D;"
+    };
+    return map[char];
+  });
+}
+
+// 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
+// 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
+
+  async function hashMessage() {
+    const input = document.getElementById("hashInput").value;
+    const encoded = new TextEncoder().encode(input);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", encoded);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    document.getElementById("hashOutput").value = hashHex;
+  }
+
+  function generateSalt() {
+  const saltArray = new Uint8Array(16); // 128-bit salt
+  window.crypto.getRandomValues(saltArray);
+  const saltHex = Array.from(saltArray).map(b => b.toString(16).padStart(2, "0")).join("");
+  document.getElementById("saltBox").value = saltHex;
+}
+
+async function hashWithSalt() {
+  const text = document.getElementById("textWithSalt").value;
+  const salt = document.getElementById("saltBox").value;
+
+  if (!text || !salt) {
+    document.getElementById("hashedWithSalt").value = "(Enter text and generate salt first)";
+    return;
+  }
+
+  const inputWithSalt = text + salt;
+  const encoded = new TextEncoder().encode(inputWithSalt);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", encoded);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  document.getElementById("hashedWithSalt").value = hashHex;
+}
+
+
+</script>
+</body>
+</html>
