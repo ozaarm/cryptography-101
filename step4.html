@@ -1,127 +1,321 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<!-- (c) Pascal Mitride, ozaarm@gmail.com //-->
-
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Step 4 - XOR</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Step 4 - Asymmetric Encryption</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
     body {
       font-family: sans-serif;
       margin-top: 100px; 
     }
-    .example { background-color:seashell; padding: 0.1em 1em; margin-bottom: 1em; }
-    .howitworks { background-color:lemonchiffon; padding: 0.1em 1em; margin-bottom: 1em; } 
-    .conclusion { background-color: seashell; padding: 0.1em 1em; margin-bottom: 1em; }        
+    h1,h2,h3 { font-family: "Open Sans", sans-serif; margin: 1em 0em;}
+
+    .intro, .howitworks, .conclusion, .example { margin: 3em 0em 1em 0em; }      
+    .example { background-color:seashell; padding: 0.2em 1em;  
+      box-shadow: 5px 5px 5px #C2C2C2; }
   </style>
 </head>
 
 <body>
-
   <!-- Navbar -->
   <nav class="navbar navbar-light bg-white fixed-top border-bottom border-2">
     <div class="container-fluid">
-      <span class="navbar-brand mb-0 h1">Cryptography 101 with JavaScript</span>
+      <span class="navbar-brand mb-0 h1">Cryptography for Beginners</span>
     </div>
   </nav>
 
-  <!-- Main content -->
   <div class="container mt-5 mb-5">
-    <h1>Using XOR to move bits</h1>
-    
-    <p>The 0s and 1s we saw in step 3 are called <strong>bits</strong>. By changing bit values according to some logic and a key, we can transform characters into something a little harder to guess. 
-    </p>
-    <p>In this example we are going to use XOR. It is a <strong>bit-wise</strong> function (it works with bits) that compares two binary numbers and does something with them : it returns <strong>1</strong> when the bits are different, <strong>0</strong> when they're the same.</p>
-    <p>For example, the letter <strong>H</strong> is 01001000 and the number 42 (picked randomly) is 00101010. We compare the two binary numbers bit by bit using XOR rules and the end result is 01100010. This new binary number is 98 in decimal which is equal to the character "b" in the ASCII table. So H becomes b using XOR with 42 as key. 
-    <p><strong>IMPORTANT : </strong>There are other bit-wise functions, but only XOR allows us to get the original value using the same key !</p>
+    <h1>4. Sharing Keys, Not Secrets</h1>
 
-    <hr>
-
-    <div class="example pb-4">
-      <h2 class="mt-3">Example</h2>
-      <p>Enter a message and we'll show you the binary version, the XOR result using key <code>42</code>, and the decrypted version.</p>
-
-      <div class="mb-3">
-        <label for="xorInput" class="form-label"><strong>INPUT</strong></label>
-        <input type="text" id="xorInput" class="form-control" placeholder="Enter your message" />
-        <button class="btn btn-primary mt-2" onclick="processXOR()">Encrypt + Decrypt</button>
-      </div>
-
-      <div class="mt-3">
-        <strong>OUTPUT (binary)</strong><br>
-        <input type="text" id="xorBinaryOutput" class="form-control mb-3" placeholder="Binary output" />
-        
-        <strong>OUTPUT (XOR-ed binary)</strong><br>
-        <input type="text" id="xorEncryptedBinary" class="form-control mb-3" placeholder="Binary XOR output" />
-        
-        <strong>OUTPUT (decrypted text)</strong><br>
-        <input type="text" id="xorDecryptedOutput" class="form-control" placeholder="Original text after double XOR" />
-      </div>
-    </div>
-
-    <div class="howitworks pb-5">
-      <h2 class="mt-3">How It Works</h2>
+    <div class="intro">
       <p>
-        For each character:
-        <ul>
-          <li>Convert it to binary with <code>toString(2)</code></li>
-          <li>XOR the numeric code with 42: <code>code ^ 42</code></li>
-          <li>Store both the binary and encrypted binary</li>
-          <li>Decrypt by XORing again with 42</li>
-        </ul>
-        The final output matches the original thanks to XOR's magical property: applying it twice with the same key undoes the operation.
+        Symmetric encryption (like XOR) uses one single key to encrypt and decrypt, which means sender and receiver must share the key. But what if you don't want to share your secret key with anyone?
+      </p>
+      <p>
+        Asymmetric encryption solves this by generating two keys:
+        a <strong>private key</strong> that stays on your device, and a <strong>public key</strong> that can be shared.
       </p>
     </div>
 
-    <div class="conclusion py-3">
-      <h2 class="mt-3">Conclusion</h2>
-      <p>With XOR, we can obscure messages using a very short numeric key. While this isn't secure for real-world use (each character always produce the same binary value), it teaches a powerful idea that leads to real encryption methods.</p>
+   <!-- USER A Key Pairs -->
+    <div class="example pb-4">
+      <h2 class="mt-3">Example 1</h2>
+      <p>
+        Press the button below to generate a key pair in your browser. The keys are created using the Web Crypto API and are encoded in Base64 for display. The browser uses a Javascript function called <code>crypto.subtle.generateKey(...)</code>, a secure browser-native function that works offline and never sends your keys anywhere.
+      </p>
+    
+      <button class="btn btn-primary mb-3" onclick="generateKeyPair()">Generate Keys</button>
+    
+      <div class="mb-3">
+        <label for="privateKeyBox" class="form-label"><strong>Private Key (User A)</strong></label>
+        <textarea id="privateKeyBox" class="form-control" rows="3" readonly></textarea>
+      </div>
+    
+      <div class="mb-3">
+        <label for="publicKeyBox" class="form-label"><strong>Public Key (User A)</strong></label>
+        <textarea id="publicKeyBox" class="form-control" rows="3" readonly></textarea>
+      </div>
+    </div>
+    
+
+    <div class="howitworks">
+      <h2>How It Works (1)</h2>
+
+      <ul>
+      <li>The browser for User A uses complex math formula from a field called <code>elliptic curve cryptography</code> to generate two linked keys: one private and one public.
+        The public key is mathematically derived from the private key, but it's practically impossible to reverse the process and guess the private key.
+      </li><br>
+ 
+      <li>User B does the same and <code>shares their public key</code> with User A (<i>manually</i> or rather automatically via their messaging app)</li>
+
+      <li>To encrypt the message User A only need User A's private key, User B's public key and the message.</li>
+      
+      </ul>
+
+      </p>
+
     </div>
 
-    <div class="d-flex justify-content-center mt-5">
-      <nav aria-label="...">
-        <ul class="pagination">
-          <li class="page-item">
-            <a class="page-link" href="step3.html">Previous</a>
-          </li>
-          <li class="page-item"><a class="page-link" href="step3.html">3</a></li>
-          <li class="page-item active" aria-current="page"><a class="page-link" href="step4.html">4</a></li>
-          <li class="page-item"><a class="page-link" href="step5.html">5</a></li>
-          <li class="page-item">
-            <a class="page-link" href="step5.html">Next</a>
-          </li>
-        </ul>
-      </nav>
-    </div>
+
+   <!-- USER A Sending Message Box -->    
+<div class="example pb-4">
+  <h2 class="mt-3">Example 2</h2>
+
+  <div class="mb-3">
+    <label for="privateKeyA" class="form-label"><strong>Private Key (User A)</strong></label>
+    <textarea id="privateKeyA" rows="3" class="form-control" readonly /></textarea>
+  </div>
+
+  <div class="mb-3">
+    <label for="publicKeyB" class="form-label"><strong>Public Key (User B)</strong></label>
+    <textarea id="publicKeyB" rows="3" class="form-control" readonly placeholder="Will be generated on page load" /></textarea>
+  </div>
+  
+
+  <div class="mb-3">
+    <label for="AESkey" class="form-label"><strong>Derived AES Key</strong></label>
+    <input type="text" id="AESkey" class="form-control" readonly placeholder="Automatically generated in the background during encryption" />
+  </div>
+  
+
+  <div class="mb-3">
+    <label for="userMessage" class="form-label"><strong>Your Message</strong></label>
+    <textarea id="userMessage" class="form-control" rows="3" placeholder="Type your message here..."></textarea>
+  </div>
+
+  <button class="btn btn-primary mb-3" onclick="encryptMessage()">Encrypt Message</button>
+
+  <div class="mb-3">
+    <label for="encryptedOutput" class="form-label"><strong>Encrypted Output</strong></label>
+    <textarea id="encryptedOutput" class="form-control" rows="4" placeholder="Encrypted result will appear here" readonly></textarea>
+  </div>
+
+</div>
+
+<div class="howitworks">
+  <h2>How It Works (2) </h2>
+
+ <p>When User A sends a message, they need :</p>
+  <ul>
+    <li>User A's private key and User B's public key are combined using a mathematical formula called <code>Elliptic Curve Diffie–Hellman (ECDH)</code> to create a shared, invisible AES key.</li>
+    <li>This AES key is used to encrypt the message securely, and the result is a <code>Base64-encoded JSON object</code>.</li>
+    <li>Only someone with User B's private key and User A's public key can re-create the same AES key to decrypt the message.</li>
+    <li>The <code>iv (initialization vector)</code> is a unique value added to each message to ensure that even identical messages produce different encrypted outputs.</li>
+  </ul>
+
+
+
+</div>
+
+
+
+<div class="conclusion py-1">
+      <h2 class="mt-3">Take-Aways</h2>
+
+      <p>
+        Asymmetric encryption is powerful because it allows two people to communicate securely — without ever sharing a private key. <strong>ECDH (Elliptic Curve Diffie–Hellman)</strong> is widely used in modern cryptography because it allows two parties to create a shared secret over an insecure channel without revealing their private keys. It's especially efficient for web and mobile applications because it creates strong encryption with relatively small key sizes. RSA, another well-known encryption method is being replaced by ECDH.</p>
+      
+      <p>Once the shared key is created, we use a cipher — in this case, <strong>AES-GCM</strong> — to encrypt the actual message. <strong>AES</strong> (Advanced Encryption Standard) is one of the most trusted encryption algorithms in the world, with versions based on key length: AES-256 used in the examples has the strongest strength. The <strong>encryption key</strong> (the AES key) is like a secret password, while the <strong>encryption cipher</strong> (AES) is the lock — a set of rules used to encrypt and decrypt the data.</p>
+
+      <br>
+      <p>
+        &#x26A0;&#xFE0F;  Key pairs are usually stored on the user's device. 
+        <code>Ephemeral keys</code> are short-lived, one-time-use key pairs generated just for a single message or session. They improve security by making it harder for attackers to gain long-term access, even if one key is compromised. Ephemeral keys are used by messaging apps such as Whatsapp, Signal, etc.
+      </p>
+        <p>
+        &#x26A0;&#xFE0F; In most cryptocurrencies (Bitcoin, Ethereum, XRP) however, the private/public key pair is long-lived, it is tied to your wallet address and <code>ultimate security depends on keeping the private key safe</code>.
+      </p>      
+
+
+      <br>
+    <p>
+      And this concludes our mini-course. Hope you've learned something. 
+    </p>
+ </div>
+
+ <div class="d-flex justify-content-center mt-5">
+  <nav aria-label="...">
+    <ul class="pagination">
+      <li class="page-item">
+        <a class="page-link" href="step3.html">Previous</a>
+      </li>
+      <li class="page-item"><a class="page-link" href="step3.html">3</a></li>
+      <li class="page-item active" aria-current="page"><a class="page-link" href="step4.html">4</a></li>
+      <li class="page-item disabled">
+        <a class="page-link" href="step4.html">Next</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+
+
   </div>
 
   <script>
-    function processXOR() {
-      const input = document.getElementById('xorInput').value;
-      let binaryOutput = "";
-      let xorBinaryOutput = "";
-      let decryptedText = "";
 
-      for (let i = 0; i < input.length; i++) {
-        const code = input.charCodeAt(i);
-        const binary = code.toString(2).padStart(8, '0');
-        const encryptedCode = code ^ 42;
-        const encryptedBinary = encryptedCode.toString(2).padStart(8, '0');
-        const decryptedChar = String.fromCharCode(encryptedCode ^ 42);
+let publicKeyBstring = "";
 
-        binaryOutput += binary + " ";
-        xorBinaryOutput += encryptedBinary + " ";
-        decryptedText += decryptedChar;
-      }
+async function generateUserBKeyPair() {
+  const keyPairB = await window.crypto.subtle.generateKey(
+    {
+      name: "ECDH",
+      namedCurve: "P-256",
+    },
+    true,
+    ["deriveKey", "deriveBits"]
+  );
 
-      document.getElementById('xorBinaryOutput').value = binaryOutput.trim();
-      document.getElementById('xorEncryptedBinary').value = xorBinaryOutput.trim();
-      document.getElementById('xorDecryptedOutput').value = decryptedText;
+  const publicKeyRaw = await window.crypto.subtle.exportKey("spki", keyPairB.publicKey);
+  publicKeyBstring = btoa(String.fromCharCode(...new Uint8Array(publicKeyRaw)));
+
+  // Paste public key into the input box
+  document.getElementById("publicKeyB").value = publicKeyBstring;
+}
+
+
+
+
+    async function generateKeyPair() {
+      const keyPair = await window.crypto.subtle.generateKey(
+        {
+          name: "ECDH",
+          namedCurve: "P-256"
+        },
+        true,
+        ["deriveKey", "deriveBits"]
+      );
+  
+      const privateKeyRaw = await window.crypto.subtle.exportKey("pkcs8", keyPair.privateKey);
+      const publicKeyRaw = await window.crypto.subtle.exportKey("spki", keyPair.publicKey);
+  
+      const privateKeyBase64 = btoa(String.fromCharCode(...new Uint8Array(privateKeyRaw)));
+      const publicKeyBase64 = btoa(String.fromCharCode(...new Uint8Array(publicKeyRaw)));
+  
+      document.getElementById("privateKeyBox").value = privateKeyBase64;
+      document.getElementById("publicKeyBox").value = publicKeyBase64;
+      document.getElementById("privateKeyA").value = privateKeyBase64;
     }
   </script>
+<script>
+  async function encryptMessage() {
+    const message = document.getElementById("userMessage").value;
+    const privateKeyBase64 = document.getElementById("privateKeyA").value.trim();
+    const publicKeyBase64 = document.getElementById("publicKeyB").value.trim();
+    const aesKeyBox = document.getElementById("AESkey");
+    const outputBox = document.getElementById("encryptedOutput");
 
+    if (!message || !privateKeyBase64 || !publicKeyBase64) {
+      outputBox.value = "(Missing message or keys)";
+      return;
+    }
+
+    try {
+      // Convert base64 to ArrayBuffer
+      const privateKeyBuffer = Uint8Array.from(atob(privateKeyBase64), c => c.charCodeAt(0));
+      const publicKeyBuffer = Uint8Array.from(atob(publicKeyBase64), c => c.charCodeAt(0));
+
+      const privateKey = await crypto.subtle.importKey(
+        "pkcs8",
+        privateKeyBuffer,
+        { name: "ECDH", namedCurve: "P-256" },
+        false,
+        ["deriveKey"]
+      );
+
+      const publicKey = await crypto.subtle.importKey(
+        "spki",
+        publicKeyBuffer,
+        { name: "ECDH", namedCurve: "P-256" },
+        false,
+        []
+      );
+
+      const aesKey = await crypto.subtle.deriveKey(
+        {
+          name: "ECDH",
+          public: publicKey
+        },
+        privateKey,
+        {
+          name: "AES-GCM",
+          length: 256
+        },
+        true,
+        ["encrypt", "decrypt"]
+      );
+
+      // Export AES key (for display/demo purposes only)
+      const aesRaw = await crypto.subtle.exportKey("raw", aesKey);
+      const aesBase64 = btoa(String.fromCharCode(...new Uint8Array(aesRaw)));
+      aesKeyBox.value = aesBase64;
+      document.getElementById("AESkey").value = aesBase64;
+
+      // Encrypt message
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const encodedMessage = new TextEncoder().encode(message);
+      const encryptedBuffer = await crypto.subtle.encrypt(
+        { name: "AES-GCM", iv },
+        aesKey,
+        encodedMessage
+      );
+
+      const encryptedBase64 = btoa(String.fromCharCode(...new Uint8Array(encryptedBuffer)));
+      const ivBase64 = btoa(String.fromCharCode(...iv));
+
+      const output = {
+        iv: ivBase64,
+        encrypted: encryptedBase64
+      };
+
+      outputBox.value = JSON.stringify(output, null, 2);
+    } catch (err) {
+      console.error(err);
+      outputBox.value = "(Encryption failed)";
+    }
+  }
+
+  generateUserBKeyPair(); 
+
+  function sanitizeInput(input) {
+  return input.replace(/[&<>"'`=\/]/g, function (char) {
+    const map = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+      "/": "&#x2F;",
+      "`": "&#x60;",
+      "=": "&#x3D;"
+    };
+    return map[char];
+  });
+}
+
+</script>
 </body>
 </html>
